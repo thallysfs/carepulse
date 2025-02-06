@@ -33,7 +33,6 @@ const PatientForm = () => {
     },
   })
  
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
   }
@@ -50,10 +49,28 @@ const PatientForm = () => {
           fieldType={FormFieldTypes.INPUT} 
           control={form.control}
           name="name"
-          label="Full name"
-          placeholder="John Doe"
+          label="Nome completo"
+          placeholder="Maria Silva"
           iconSrc="/assets/icons/user.svg"
           iconAlt="User icon"
+        />
+
+        <CustomFormField
+          fieldType={FormFieldTypes.INPUT} 
+          control={form.control}
+          name="email"
+          label="Email"
+          placeholder="maria.silva@gmail.com"
+          iconSrc="/assets/icons/email.svg"
+          iconAlt="email"
+        />
+
+<CustomFormField
+          fieldType={FormFieldTypes.PHONE_INPUT} 
+          control={form.control}
+          name="phone"
+          label="Telefone"
+          placeholder="(85) 99999-9999"
         />
 
         <Button type="submit">Submit</Button>
