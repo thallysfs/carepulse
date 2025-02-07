@@ -35,9 +35,16 @@ const PatientForm = () => {
     },
   })
  
-  function onSubmit(values: z.infer<typeof UserFormValidation>) {
-    console.log(values)
+  function onSubmit({name, email, phone}: z.infer<typeof UserFormValidation>) {
+    setIsLoading(true)
+
+    try {
+      
+    } catch (error) {
+      
+    }
   }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
