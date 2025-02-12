@@ -82,7 +82,7 @@ const PatientForm = () => {
           iconAlt="email"
         />
 
-<CustomFormField
+        <CustomFormField
           fieldType={FormFieldTypes.PHONE_INPUT} 
           control={form.control}
           name="phone"
