@@ -36,7 +36,15 @@ interface CustomProps {
 }
 
 const RenderField = ({field, props}: {field: any; props: CustomProps }) =>{
-  const { fieldType, iconSrc, iconAlt, placeholder} = props
+  const { 
+    fieldType, 
+    iconSrc, 
+    iconAlt, 
+    placeholder, 
+    showTimeSelect, 
+    dateFormat,
+    renderSkeleton
+  } = props
 
   switch (props.fieldType) {
     case FormFieldTypes.INPUT:
@@ -87,13 +95,19 @@ const RenderField = ({field, props}: {field: any; props: CustomProps }) =>{
           />
           <FormControl>
           <DatePicker 
-            selected={startDate} 
+            selected={field.value} 
             onChange={(date) => 
-            setStartDate(date)} 
+            field.onChange(date)} 
+            dateFormat={dateFormat ?? 'MM/dd/yyyy'}
+            showTimeSelect={showTimeSelect ?? false}
+            timeInputLabel="Time:"
+            wrapperClassName="date-picker"
           />
           </FormControl>
         </div>
-      )  
+      )
+    case FormFieldTypes.SKELETON:
+      return renderSkeleton ? renderSkeleton(field) : null
     default:
       break
   }

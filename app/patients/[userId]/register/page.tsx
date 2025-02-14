@@ -5,6 +5,7 @@ import Link from 'next/link'
 import React from 'react'
 
 const Registration = async ({ params: {userId}}: SearchParamProps) => {
+  console.log("🚀 ~ Registration ~ userId:", userId)
   const user = await getUser(userId) 
 
 

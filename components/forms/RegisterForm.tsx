@@ -53,7 +53,6 @@ const RegisterForm = ({ user }: { user: User }) => {
         <section className="space-y-4">
           <h1 className="header">Bem vindo</h1>
           <p className="text-dark-700">Nos conte mais sobre você</p>
-
         </section>
 
         <section className="space-y-6">
@@ -106,36 +105,75 @@ const RegisterForm = ({ user }: { user: User }) => {
             name="gender"
             label="Gênero"
             renderSkeleton={(field) => {
-              <FormControl>
-                <RadioGroup 
+              return <FormControl>
+                <RadioGroup
                   className="flex h-11 gap-6 xl:justify-between"
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
-                  {
-                    GenderOptions.map((option) =>(
-                      <div key={option} className="radio-group">
-                        <RadioGroupItem value={option} id={option} />
-                        <Label htmlFor={option} className="cursor-pointer">
-                          {option}
-                        </Label>
-                      </div>
-                    ))
-                  }
+                  {GenderOptions.map((option) => (
+                    <div key={option} className="radio-group">
+                      <RadioGroupItem value={option} id={option} />
+                      <Label htmlFor={option} className="cursor-pointer">
+                        {option}
+                      </Label>
+                    </div>
+                  ))}
                 </RadioGroup>
-
-              </FormControl>
+              </FormControl>;
             }}
           /> 
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
-          
+          <CustomFormField
+            fieldType={FormFieldTypes.INPUT} 
+            control={form.control}
+            name="address"
+            label="Endereço"
+            placeholder="Av, Antônio Sales, 123"
+          />
+
+          <CustomFormField
+            fieldType={FormFieldTypes.INPUT} 
+            control={form.control}
+            name="occupation"
+            label="Ocupação"
+            placeholder="Enegenheiro de software" 
+        />
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
-        
+        <CustomFormField
+            fieldType={FormFieldTypes.INPUT} 
+            control={form.control}
+            name="emergencyContactName"
+            label="Contato de Emergência"
+            placeholder="João Silva"
+          />
+
+          <CustomFormField
+            fieldType={FormFieldTypes.PHONE_INPUT} 
+            control={form.control}
+            name="emergencyContactNumber"
+            label="Número de Emergência"
+            placeholder="(85)99999-9999"
+          /> 
         </div>
+
+        <section className="space-y-6">
+          <div className="mb-9 space-y-1">
+            <h2 className="sub-header">Informações Médicas</h2>
+          </div>
+        </section>
+
+        <CustomFormField
+            fieldType={FormFieldTypes.SELECT} 
+            control={form.control}
+            name="primaryPhysician"
+            label="Número de Emergência"
+            placeholder="(85)99999-9999"
+          /> 
 
         <div className="flex flex-col gap-6 xl:flex-row">
         
