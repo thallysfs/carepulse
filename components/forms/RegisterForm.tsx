@@ -13,10 +13,11 @@ import { useRouter } from "next/navigation";
 import { createUser } from "@/lib/actions/patient.actions";
 import { FormFieldTypes } from "./patientForm";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Doctors, GenderOptions } from "@/constants";
+import { Doctors, GenderOptions, IdentificationTypes } from "@/constants";
 import { Label } from "../ui/label";
 import { SelectItem } from "../ui/select";
 import Image from 'next/image'
+import FileUploader from "../FileUploader";
 
 
 const RegisterForm = ({ user }: { user: User }) => {
@@ -211,12 +212,81 @@ const RegisterForm = ({ user }: { user: User }) => {
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
-        
+            <CustomFormField
+              fieldType={FormFieldTypes.TEXTAREA} 
+              control={form.control}
+              name="allergies"
+              label="Alergias"
+              placeholder="Penicilinam Dipirona etc..."
+            />
+
+            <CustomFormField
+              fieldType={FormFieldTypes.TEXTAREA} 
+              control={form.control}
+              name="currentMedication"
+              label="Toma alguma medicalção atualmente?"
+              placeholder="Ibuprofeno 200mg, Paracetamol 500mg" 
+            />
         </div>
 
         <div className="flex flex-col gap-6 xl:flex-row">
-        
+          <CustomFormField
+              fieldType={FormFieldTypes.TEXTAREA} 
+              control={form.control}
+              name="familyMedicalHistory"
+              label="Histórico de doença na família"
+              placeholder="minha mãe tem asma, meu pai tem diabetes"
+            />
+
+            <CustomFormField
+              fieldType={FormFieldTypes.TEXTAREA} 
+              control={form.control}
+              name="pastMedicalHistory"
+              label="Histórico de doenças passadas"
+              placeholder="Já tive pneumonia, já fiz cirurgia de apendicite" 
+            />
         </div>
+
+        <section className="space-y-6">
+          <div className="mb-9 space-y-1">
+            <h2 className="sub-header">Identificação e Verificação</h2>
+          </div>
+        </section>
+
+        <CustomFormField
+            fieldType={FormFieldTypes.SELECT} 
+            control={form.control}
+            name="identificationType"
+            label="Tipo de identificação"
+            placeholder="Selecione um tipo de identificação"
+          >
+            {IdentificationTypes.map((type, i) => (
+              <SelectItem key={type} value={type}>
+                {type}
+              </SelectItem>
+            ))}
+        </CustomFormField>
+
+        <CustomFormField
+          fieldType={FormFieldTypes.INPUT} 
+          control={form.control}
+          name="name"
+          label="identificationNumber"
+          placeholder="123456789"
+        />
+
+        <CustomFormField
+            fieldType={FormFieldTypes.SKELETON} 
+            control={form.control}
+            name="identificationDocument"
+            label="Digitalização do documento de identificação"
+            renderSkeleton={(field) => {
+              <FormControl>
+                <FileUploader />
+              </FormControl>
+            }}
+          /> 
+        
 
         <SubmitButton isLoading={isLoading}>Começar</SubmitButton>
       </form>

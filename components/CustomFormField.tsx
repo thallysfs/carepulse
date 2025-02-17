@@ -9,6 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "./ui/input"
+import { Textarea } from "./ui/textarea"
 import { Control, Form } from "react-hook-form"
 import { FormFieldTypes } from "./forms/patientForm"
 import Image from "next/image"
@@ -69,6 +70,17 @@ const RenderField = ({field, props}: {field: any; props: CustomProps }) =>{
           </FormControl>
 
         </div>
+      )
+    case FormFieldTypes.TEXTAREA:
+      return (
+        <FormControl>
+          <Textarea 
+            placeholder={placeholder}
+            {...field}
+            className="shad-textArea"
+            disabled={props.disabled}
+          />
+        </FormControl>
       )
     case FormFieldTypes.PHONE_INPUT:
       return (
