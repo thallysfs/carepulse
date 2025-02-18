@@ -21,7 +21,7 @@ export const PatientFormValidation = z.object({
     .string()
     .refine((phone) => /^\+\d{10,15}$/.test(phone), "Número de telefone inválido"),
   birthDate: z.coerce.date(),
-  gender: z.enum(["Masculino", "Feminino", "Outro"]),
+  gender: z.enum(["masculino", "feminino", "outro"]),
   address: z
     .string()
     .min(5, "Endereço deve ter pelo menos 5 caracteres")
