@@ -280,12 +280,41 @@ const RegisterForm = ({ user }: { user: User }) => {
             control={form.control}
             name="identificationDocument"
             label="Digitalização do documento de identificação"
-            renderSkeleton={(field) => {
+            renderSkeleton={(field) => (
               <FormControl>
                 <FileUploader files={field.value} onChange={field.onChange} />
               </FormControl>
-            }}
-          /> 
+            )}
+          />
+
+        <section className="space-y-6">
+          <div className="mb-9 space-y-1">
+            <h2 className="sub-header">Consentimento e privacidade</h2>
+          </div>
+        </section>
+
+        <CustomFormField 
+          fieldType={FormFieldTypes.CHECKBOX}
+          control={form.control}
+          name="treatmentConsent"
+          label="Aceito os termos"
+        />
+
+
+        <CustomFormField 
+          fieldType={FormFieldTypes.CHECKBOX}
+          control={form.control}
+          name="disclosureConsent"
+          label="Eu concordo com a divulgação de informações"
+        />
+
+
+        <CustomFormField 
+          fieldType={FormFieldTypes.CHECKBOX}
+          control={form.control}
+          name="privacyConsent"
+          label="Eu concordo com a política de privacidade"
+        />
         
 
         <SubmitButton isLoading={isLoading}>Começar</SubmitButton>
