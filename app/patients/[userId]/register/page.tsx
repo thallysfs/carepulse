@@ -4,10 +4,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-const Registration = async ({params}: SearchParamProps) => {
+const Register = async ({params}: SearchParamProps) => {
   const { userId } = await params
   const user = await getUser(userId) 
-  console.log("🚀 ~ Registration ~ userId:", userId)
 
 
 return (
@@ -25,7 +24,7 @@ return (
 
           <RegisterForm user={user} />
 
-          <p className='justify-items-end text-dark-600 xl:text-left'>
+          <p className='copyright py-12'>
             © 2025 CarePulse
           </p>
         </div>
@@ -36,10 +35,10 @@ return (
         height={1000}
         width={1000}
         alt="patient"
-        className='side-img max-w[390px]'
+        className='side-img max-w-[390px]'
       />
     </div>
   )
 }
 
-export default Registration
+export default Register
