@@ -1,5 +1,5 @@
 
-import PatientForm from '@/components/forms/patientForm';
+import PatientForm from '@/components/forms/PatientForm';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ export default function Home() {
     <div className="flex h-screen max-h-screen">
       {/* TODO: OTP verification | PassKeyModal */}
       <section className="remove-scrollbar container my-auto">
-        <div className="sub-container max-w[496px]">
+        <div className="sub-container max-w-[496px]">
           <Image 
             src="/assets/icons/logo-full.svg"
             height={1000}
@@ -36,7 +36,7 @@ export default function Home() {
         height={1000}
         width={1000}
         alt="patient"
-        className='side-img max-w[50%]'
+        className='side-img max-w-[50%]'
       />
     </div>
   );

@@ -11,7 +11,7 @@ import {
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
 import { Control, Form } from "react-hook-form"
-import { FormFieldTypes } from "./forms/patientForm"
+import { FormFieldTypes } from "./forms/PatientForm"
 import Image from "next/image"
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'

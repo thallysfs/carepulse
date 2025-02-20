@@ -11,7 +11,7 @@ import { useState } from "react";
 import { PatientFormValidation, UserFormValidation } from "@/lib/validation";
 import { useRouter } from "next/navigation";
 import { createUser, registerPatient } from "@/lib/actions/patient.actions";
-import { FormFieldTypes } from "./patientForm";
+import { FormFieldTypes } from "./PatientForm";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Doctors, GenderOptions, IdentificationTypes, PatientFormDefaultValues } from "@/constants";
 import { Label } from "../ui/label";
@@ -209,7 +209,7 @@ const RegisterForm = ({ user }: { user: User }) => {
                 </div>
               </SelectItem>
             ))}
-          </CustomFormField>
+        </CustomFormField>
 
 
         <div className="flex flex-col gap-6 xl:flex-row">
@@ -289,8 +289,8 @@ const RegisterForm = ({ user }: { user: User }) => {
         <CustomFormField
           fieldType={FormFieldTypes.INPUT} 
           control={form.control}
-          name="name"
-          label="identificationNumber"
+          name="identificationNumber"
+          label="Número de identificação"
           placeholder="123456789"
         />
 
