@@ -70,11 +70,11 @@ const AppointmentForm = ({ userId, patientId, type}: {
           note: values.note,
           status: status as Status
         }
-        const appointment = await createAppointment(appointmentData)
+        const newAppointment = await createAppointment(appointmentData)
 
-        if(appointment){https://cloud.appwrite.io/console/project-67a5f4f900196de6ffe5/storage
+        if(newAppointment){https://cloud.appwrite.io/console/project-67a5f4f900196de6ffe5/storage
           form.reset()
-          router.push(`/patients/new-appointment/sucess?appointmentId=${appointment.id}`)
+          router.push(`/patients/${userId}/new-appointment/success?appointmentId=${newAppointment.$id}`)
         }
       }
 

@@ -13,9 +13,12 @@ export const {
 
 const client = new sdk.Client();
 
-if (!ENDPOINT || !PROJECT_ID || !API_KEY) {
-  throw new Error("Variáveis de ambiente obrigatórias não definidas.");
-}
+// console.log("🚀 ~ ENDPOINT:", ENDPOINT)
+// console.log("🚀 ~ PROJECT_ID:", PROJECT_ID)
+// console.log("🚀 ~ API_KEY:", API_KEY)
+// if (!ENDPOINT || !PROJECT_ID || !API_KEY) {
+//   throw new Error("Variáveis de ambiente obrigatórias não definidas.");
+// }
 
 client.setEndpoint(ENDPOINT!).setProject(PROJECT_ID!).setKey(API_KEY!);
 
