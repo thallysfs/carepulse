@@ -28,7 +28,7 @@ export default async function NewAppointment({params}: SearchParamProps) {
             patient={patient.$id}
           />
 
-          <p className='justify-items-end text-dark-600 xl:text-left'>
+          <p className='copiright mt-10 py-12'>
             © 2025 CarePulse
           </p>
         </div>

@@ -9,9 +9,9 @@ import { Button } from "../ui/button"
 import CustomFormField from "../CustomFormField";
 import SubmitButton from "../SubmitButton";
 import { useState } from "react";
-import { UserFormValidation } from "@/lib/validation";
+import { getAppointmentSchema } from "@/lib/validation";
 import { useRouter } from "next/navigation";
-import { createUser } from "@/lib/actions/patient.actions";
+import { createAppointment } from "@/lib/actions/appointment.actions";
 import { FormFieldTypes } from "./PatientForm";
 import { Doctors } from "@/constants";
 import { SelectItem } from "../ui/select";
@@ -21,34 +21,85 @@ import Image from 'next/image'
 const AppointmentForm = ({ userId, patientId, type}: {
   userId: string
   patientId: string
-  type: "create" | "cancel"
+  type: "create" | "cancel" | "schedule"
 }) => {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
+  const AppointmentFormValidation = getAppointmentSchema(type)
+
   // 1. Definições de validação de form
-  const form = useForm<z.infer<typeof UserFormValidation>>({
-    resolver: zodResolver(UserFormValidation),
+  const form = useForm<z.infer<typeof AppointmentFormValidation>>({
+    resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
+      primaryPhysician:"",
+      schedule: new Date(),
+      reason: "",
+      note: "",
+      cancellationReason: ""
     },
   })
  
-  async function onSubmit({name, email, phone}: z.infer<typeof UserFormValidation>) {
-    //setIsLoading(true)
+  async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
+    setIsLoading(true)
+
+    let status
+    switch (type) {
+      case 'schedule':
+        status = "scheduled"
+        break;
+      case 'cancel':
+        status = "cancelled"
+        break;
+      case 'create':
+        status = "pending"
+        break;
+    
+      default:
+        break;
+    }
 
     try {
-      const userData = {name, email, phone}
+      if(type === 'create' && patientId) {
+        const appointmentData = {
+          userId,
+          patient: patientId,
+          primaryPhysician: values.primaryPhysician,
+          schedule: new Date(values.schedule),
+          reason: values.reason!,
+          note: values.note,
+          status: status as Status
+        }
+        const appointment = await createAppointment(appointmentData)
 
-      const user = await createUser(userData)
+        if(appointment){https://cloud.appwrite.io/console/project-67a5f4f900196de6ffe5/storage
+          form.reset()
+          router.push(`/patients/new-appointment/sucess?appointmentId=${appointment.id}`)
+        }
+      }
 
-      if(user) router.push(`/patients/${user.$id}/register`)
+
     } catch (error) {
       console.log("🚀 ~ onSubmit ~ error:", error)
       
     }
+  }
+
+  let buttonLabel
+
+  switch (type) {
+    case 'cancel':
+      buttonLabel = "Cancelar Consulta"      
+      break;
+    case 'create':
+      buttonLabel = "Nova Consulta"
+      break;
+    case 'schedule':
+      buttonLabel = "Agendar Consulta"
+      break;
+
+    default:
+      break;
   }
 
   return (
@@ -65,7 +116,7 @@ const AppointmentForm = ({ userId, patientId, type}: {
               fieldType={FormFieldTypes.SELECT} 
               control={form.control}
               name="primaryPhysician"
-              label="Médico de família"
+              label="Médico"
               placeholder="Selecione um médico"
             >
               {Doctors.map((doctor, i) => (
@@ -83,11 +134,51 @@ const AppointmentForm = ({ userId, patientId, type}: {
                 </SelectItem>
               ))}
             </CustomFormField>
+
+            <CustomFormField
+              fieldType={FormFieldTypes.DATE_PICKER} 
+              control={form.control}
+              name="schedule"
+              label="Data da Consulta"
+              showTimeSelect
+              dateFormat="dd/MM/yyyy HH:mm"
+            />
+
+            <div className="flex flex-col gap-6 xl:flex-row">
+              <CustomFormField
+                fieldType={FormFieldTypes.TEXTAREA} 
+                control={form.control}
+                name="reason"
+                label="Motivo da Consulta"
+                placeholder="Descreva o motivo da sua consulta"
+              />
+
+              <CustomFormField
+                fieldType={FormFieldTypes.TEXTAREA} 
+                control={form.control}
+                name="note"
+                label="Observações"
+                placeholder="Adicione observações"
+              />
+            </div>
           </>
         )}
 
+        { type === "cancel" && (
+          <CustomFormField
+            fieldType={FormFieldTypes.TEXTAREA} 
+            control={form.control}
+            name="reason"
+            label="Motivo do Cancelamento"
+            placeholder="Descreva o motivo do cancelamento"
+          />
+        )}
 
-        <SubmitButton isLoading={isLoading}>Começar</SubmitButton>
+
+        <SubmitButton isLoading={isLoading} className={`${type === "cancel" 
+          ? "shad-danger-btn" : "shad-primary-btn"} w-full`}>
+          {buttonLabel}
+        </SubmitButton>
       </form>
     </Form>
   )
