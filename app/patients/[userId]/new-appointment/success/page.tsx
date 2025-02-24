@@ -1,13 +1,19 @@
-"use client"
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+
+import { Doctors } from '@/constants'
+import { getAppointments } from '@/lib/actions/appointment.actions'
+import { formatDateTime } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+
 
 const Success = async ({params, searchParams}: SearchParamProps) => {
   const { userId } = await params
-  const { appointmentId } = await searchParams
-  console.log("🚀 ~ Success ~ appointmentId:", appointmentId)
+  const { appointmentId } = await searchParams || ''
+  const appointment = await getAppointments(appointmentId as string);
+
+  const doctor = Doctors.find((doc) => doc.name === appointment.primaryPhysician)
 
 
   return (
@@ -37,13 +43,37 @@ const Success = async ({params, searchParams}: SearchParamProps) => {
         </section>
 
         <section className='request-details'>
-          <p>Detalhes da consulta agendada:</p>
-          <div>
-            {/* <Image 
-
-            /> */}
+          <p>Detalhes do agendamento:</p>
+          <div className="flex items-center gap-3">
+            <Image 
+              src={doctor?.image!}
+              alt='doctor'
+              width={100}
+              height={100}
+              className='size-6'
+            />
+            <p className='whitespace-nowrap'>Dr. {doctor?.name}</p>
+          </div>
+          <div className='flex gap-2'>
+            <Image 
+              src="/assets/icons/calendar.svg"
+              alt='calendar'
+              width={24}
+              height={24}
+            />
+            <p>{formatDateTime(appointment.schedule).dateTime}</p>
           </div>
         </section>
+
+        <Button className='shad-primary-btn' variant='outline' asChild>
+          <Link href={`/patients/${userId}/new-appointment`}>
+            Nova consulta
+          </Link>
+        </Button>
+
+        <p className='copyright'>
+            © 2025 CarePulse
+          </p>
       </div>
     </div>
   )
