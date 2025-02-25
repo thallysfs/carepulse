@@ -1,5 +1,9 @@
 "use client";
 
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,24 +23,35 @@ import {
 } from "@/components/ui/input-otp";
 import { encryptKey } from "@/lib/utils";
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { set } from "zod";
-
 const PasskeyModal = () => {
   const router = useRouter();
+  const path = usePathname();
   const [open, setOpen] = useState(true);
   const [passKey, setPassKey] = useState("");
   const [error, setError] = useState("");
 
   const encryptedKey =
-    typeof window !== "undefined" ? localStorage.getItem("accessKey") : null;
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("accessKey")
+      : null;
+
+  useEffect(() => {
+    if (path) {
+      if (passKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
+        console.log("🚀 ~ useEffect ~ path:", path);
+        setOpen(false);
+        router.push("/admin");
+      } else {
+        setOpen(true);
+      }
+    }
+  }, [encryptedKey]);
 
   const validatePassKey = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+    console.log("🚀 ~ PasskeyModal ~ passKey:", passKey);
 
     if (passKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
       const encryptedKey = encryptKey(passKey);
