@@ -21,13 +21,13 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { encryptKey } from "@/lib/utils";
+import { decryptKey, encryptKey } from "@/lib/utils";
 
 const PasskeyModal = () => {
   const router = useRouter();
   const path = usePathname();
   const [open, setOpen] = useState(true);
-  const [passKey, setPassKey] = useState("");
+  const [passkey, setPasskey] = useState("");
   const [error, setError] = useState("");
 
   const encryptedKey =
@@ -36,9 +36,10 @@ const PasskeyModal = () => {
       : null;
 
   useEffect(() => {
+    const accessKey = encryptedKey && decryptKey(encryptedKey);
+
     if (path) {
-      if (passKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-        console.log("🚀 ~ useEffect ~ path:", path);
+      if (accessKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
         setOpen(false);
         router.push("/admin");
       } else {
@@ -51,10 +52,9 @@ const PasskeyModal = () => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
-    console.log("🚀 ~ PasskeyModal ~ passKey:", passKey);
 
-    if (passKey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
-      const encryptedKey = encryptKey(passKey);
+    if (passkey === process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
+      const encryptedKey = encryptKey(passkey);
 
       localStorage.setItem("accessKey", encryptedKey);
 
@@ -93,8 +93,8 @@ const PasskeyModal = () => {
         <div>
           <InputOTP
             maxLength={6}
-            value={passKey}
-            onChange={(value) => setPassKey(value)}
+            value={passkey}
+            onChange={(value) => setPasskey(value)}
           >
             <InputOTPGroup className="shad-otp">
               <InputOTPSlot className="shad-otp-slot" index={0} />
