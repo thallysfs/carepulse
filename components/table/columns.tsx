@@ -1,6 +1,11 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import StatusBadge from "../StatusBadge";
+import { formatDateTime } from "@/lib/utils";
+import { Doctors } from "@/constants";
+import Image from "next/image";
+import AppointmentModal from "../AppointmentModal";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -13,15 +18,71 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
   {
+    header: "ID",
+    cell: ({ row }) => <p className="text-14-medium">{row.index + 1}</p>,
+  },
+  {
+    header: "Paciente",
+    cell: ({ row }) => {
+      const appointment = row.original;
+
+      return <p className="text-14-medium">{row.original.patient.name}</p>;
+    },
+  },
+  {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      return (
+        <div className="min-w-[115px]">
+          <StatusBadge status={row.original.status} />
+        </div>
+      );
+    },
   },
   {
-    accessorKey: "email",
-    header: "Email",
+    accessorKey: "schedule",
+    header: "Agendamento",
+    cell: ({ row }) => {
+      return (
+        <p className="text-14-regular min-w-[100px]">
+          {formatDateTime(row.original.schedule).dateTime}
+        </p>
+      );
+    },
   },
   {
-    accessorKey: "amount",
-    header: "Amount",
+    accessorKey: "primaryPhysician",
+    header: "Médico",
+    cell: ({ row }) => {
+      const doctor = Doctors.find(
+        (doc) => doc.name === row.original.primaryPhysician
+      );
+
+      return (
+        <div className="flex items-center gap-3">
+          <Image
+            src={doctor?.image}
+            alt={doctor?.name}
+            width={100}
+            height={100}
+            className="size-8"
+          />
+          Dr(a). {doctor?.name}
+        </div>
+      );
+    },
+  },
+  {
+    id: "actions",
+    header: () => <div className="pl-4">Ações</div>,
+    cell: ({ row }) => {
+      return (
+        <div className="flex gap-1">
+          <AppointmentModal type="agendar" />
+          <AppointmentModal type="cancelar" />
+        </div>
+      );
+    },
   },
 ];
