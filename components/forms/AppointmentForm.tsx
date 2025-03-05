@@ -52,6 +52,7 @@ const AppointmentForm = ({
   });
 
   async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
+    console.log("🚀 ~ onSubmit ~ appoitmentToUpdate.type:", { type });
     setIsLoading(true);
 
     let status;
@@ -202,7 +203,7 @@ const AppointmentForm = ({
           <CustomFormField
             fieldType={FormFieldTypes.TEXTAREA}
             control={form.control}
-            name="reason"
+            name="cancelationReason"
             label="Motivo do Cancelamento"
             placeholder="Descreva o motivo do cancelamento"
           />
