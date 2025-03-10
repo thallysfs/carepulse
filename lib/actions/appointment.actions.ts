@@ -1,7 +1,7 @@
 "use server"
 
 import { ID, Query } from "node-appwrite"
-import { DATABASE_ID, databases, APPOINTMENT_COLLECTION_ID } from "../appwrite.config"
+import { DATABASE_ID, databases, APPOINTMENT_COLLECTION_ID, messaging } from "../appwrite.config"
 import { parseStringify } from "../utils"
 import { Appointment } from "@/types/appwrite.types"
 import { revalidatePath } from "next/cache"
@@ -90,12 +90,32 @@ export const updateAppointment = async ({appointmentId, userId, appointment, typ
       throw new Error("Failed to update appointment")
     }
 
-    // TODO SMS notification
+    const smsMessage = `
+      Ola, seu agendamento para ${new Date(appointment.schedule).toLocaleString()} 
+      foi ${type === "schedule" ? "agendado" : "cancelado"}
+    `
 
+    await sendSMSNotification(userId, smsMessage)
+    
     revalidatePath('/admin')
     return parseStringify(updatedAppointment)
   } catch (error) {
     console.log(error)
     
+  }
+}
+
+export const sendSMSNotification = async (userId: string, content: string) => {
+  try {
+    const message = await messaging.createSms(
+      ID.unique(),
+      content,
+      [],
+      [userId]
+    )
+
+    return parseStringify(message)
+  } catch (error) {
+    console.log(error)
   }
 }
