@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Button } from "./ui/button";
-import AppointmentForm from "./forms/AppointmentForm";
+import { AppointmentForm } from "./forms/AppointmentForm";
 
 interface AppointmentModalProps {
   type: "schedule" | "cancel";
@@ -32,7 +32,7 @@ const AppointmentModal = ({
           variant="ghost"
           className={`capitalize ${type === "schedule" && "text-green-500"}`}
         >
-          {type}
+          {type === "schedule" ? "agendar" : "cancelar"}
         </Button>
       </DialogTrigger>
       <DialogContent className="shad-dialog sm:max-w-md">

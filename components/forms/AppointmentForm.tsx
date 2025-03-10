@@ -1,58 +1,62 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "../ui/button";
-import CustomFormField from "../CustomFormField";
-import SubmitButton from "../SubmitButton";
-import { useState } from "react";
-import { getAppointmentSchema } from "@/lib/validation";
-import { useRouter } from "next/navigation";
+
+import { SelectItem } from "@/components/ui/select";
+import { Doctors } from "@/constants";
 import {
   createAppointment,
   updateAppointment,
 } from "@/lib/actions/appointment.actions";
-import { FormFieldTypes } from "./PatientForm";
-import { Doctors } from "@/constants";
-import { SelectItem } from "../ui/select";
-import Image from "next/image";
+import { getAppointmentSchema } from "@/lib/validation";
 import { Appointment } from "@/types/appwrite.types";
 
-const AppointmentForm = ({
+import "react-datepicker/dist/react-datepicker.css";
+
+import CustomFormField from "../CustomFormField";
+import SubmitButton from "../SubmitButton";
+import { Form } from "../ui/form";
+import { FormFieldTypes } from "./PatientForm";
+
+export const AppointmentForm = ({
   userId,
   patientId,
-  type,
+  type = "create",
   appointment,
   setOpen,
 }: {
   userId: string;
   patientId: string;
-  type: "create" | "cancel" | "schedule";
+  type: "create" | "schedule" | "cancel";
   appointment?: Appointment;
-  setOpen: (open: boolean) => void;
+  setOpen?: Dispatch<SetStateAction<boolean>>;
 }) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
-  // 1. Definições de validação de form
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      primaryPhysician: appointment ? appointment.primaryPhysician : "",
-      schedule: appointment ? new Date(appointment.schedule) : new Date(),
+      primaryPhysician: appointment ? appointment?.primaryPhysician : "",
+      schedule: appointment
+        ? new Date(appointment?.schedule!)
+        : new Date(Date.now()),
       reason: appointment ? appointment.reason : "",
-      note: appointment ? appointment.note : "",
-      cancellationReason: appointment ? appointment.cancellationReason : "",
+      note: appointment?.note || "",
+      cancellationReason: appointment?.cancellationReason || "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
-    console.log("🚀 ~ onSubmit ~ appoitmentToUpdate.type:", { type });
+  const onSubmit = async (
+    values: z.infer<typeof AppointmentFormValidation>
+  ) => {
     setIsLoading(true);
 
     let status;
@@ -63,48 +67,44 @@ const AppointmentForm = ({
       case "cancel":
         status = "cancelled";
         break;
-      case "create":
-        status = "pending";
-        break;
-
       default:
-        break;
+        status = "pending";
     }
 
     try {
       if (type === "create" && patientId) {
-        const appointmentData = {
+        const appointment = {
           userId,
           patient: patientId,
           primaryPhysician: values.primaryPhysician,
           schedule: new Date(values.schedule),
           reason: values.reason!,
-          note: values.note,
           status: status as Status,
+          note: values.note,
         };
-        const newAppointment = await createAppointment(appointmentData);
+
+        const newAppointment = await createAppointment(appointment);
 
         if (newAppointment) {
-          //cloud.appwrite.io/console/project-67a5f4f900196de6ffe5/storage
-          https: form.reset();
+          form.reset();
           router.push(
             `/patients/${userId}/new-appointment/success?appointmentId=${newAppointment.$id}`
           );
         }
       } else {
-        const appoitmentToUpdate = {
+        const appointmentToUpdate = {
           userId,
           appointmentId: appointment?.$id!,
           appointment: {
-            primaryPhysician: values?.primaryPhysician,
-            schedule: new Date(values?.schedule),
+            primaryPhysician: values.primaryPhysician,
+            schedule: new Date(values.schedule),
             status: status as Status,
-            cancellationReason: values?.cancellationReason,
+            cancellationReason: values.cancellationReason,
           },
           type,
         };
 
-        const updatedAppointment = await updateAppointment(appoitmentToUpdate);
+        const updatedAppointment = await updateAppointment(appointmentToUpdate);
 
         if (updatedAppointment) {
           setOpen && setOpen(false);
@@ -112,35 +112,31 @@ const AppointmentForm = ({
         }
       }
     } catch (error) {
-      console.log("🚀 ~ onSubmit ~ error:", error);
+      console.log(error);
     }
-  }
+    setIsLoading(false);
+  };
 
   let buttonLabel;
-
   switch (type) {
     case "cancel":
       buttonLabel = "Cancelar Consulta";
       break;
-    case "create":
-      buttonLabel = "Nova Consulta";
-      break;
     case "schedule":
       buttonLabel = "Agendar Consulta";
       break;
-
     default:
-      break;
+      buttonLabel = "Confirmar Consulta";
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex-1 space-y-6">
         {type === "create" && (
           <section className="mb-12 space-y-4">
-            <h1 className="header">Nova Consulta</h1>
+            <h1 className="header">New Appointment</h1>
             <p className="text-dark-700">
-              Solicite sua nova consulta em segundos
+              Request a new appointment in 10 seconds.
             </p>
           </section>
         )}
@@ -174,26 +170,30 @@ const AppointmentForm = ({
               fieldType={FormFieldTypes.DATE_PICKER}
               control={form.control}
               name="schedule"
-              label="Data da Consulta"
+              label="Data prevista para consulta"
               showTimeSelect
-              dateFormat="dd/MM/yyyy HH:mm"
+              dateFormat="MM/dd/yyyy  -  h:mm aa"
             />
 
-            <div className="flex flex-col gap-6 xl:flex-row">
+            <div
+              className={`flex flex-col gap-6  ${type === "create" && "xl:flex-row"}`}
+            >
               <CustomFormField
                 fieldType={FormFieldTypes.TEXTAREA}
                 control={form.control}
                 name="reason"
-                label="Motivo da Consulta"
-                placeholder="Descreva o motivo da sua consulta"
+                label="Motivo da consulta"
+                placeholder="check-up anual"
+                disabled={type === "schedule"}
               />
 
               <CustomFormField
                 fieldType={FormFieldTypes.TEXTAREA}
                 control={form.control}
                 name="note"
-                label="Observações"
-                placeholder="Adicione observações"
+                label="Comentários / Anotações"
+                placeholder="Prefiro consulta a tarde"
+                disabled={type === "schedule"}
               />
             </div>
           </>
@@ -203,17 +203,15 @@ const AppointmentForm = ({
           <CustomFormField
             fieldType={FormFieldTypes.TEXTAREA}
             control={form.control}
-            name="cancelationReason"
-            label="Motivo do Cancelamento"
-            placeholder="Descreva o motivo do cancelamento"
+            name="cancellationReason"
+            label="Motivo do cancelamento"
+            placeholder="Reunião urgente"
           />
         )}
 
         <SubmitButton
           isLoading={isLoading}
-          className={`${
-            type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"
-          } w-full`}
+          className={`${type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"} w-full`}
         >
           {buttonLabel}
         </SubmitButton>
@@ -221,5 +219,3 @@ const AppointmentForm = ({
     </Form>
   );
 };
-
-export default AppointmentForm;

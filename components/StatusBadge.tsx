@@ -3,6 +3,19 @@ import clsx from "clsx";
 import Image from "next/image";
 
 const StatusBadge = ({ status }: { status: Status }) => {
+  let portugueseStatus;
+  switch (status) {
+    case "scheduled":
+      portugueseStatus = "Agendado";
+      break;
+    case "pending":
+      portugueseStatus = "Pendente";
+      break;
+    case "cancelled":
+      portugueseStatus = "Cancelado";
+      break;
+  }
+
   return (
     <div
       className={clsx("status-badge", {
@@ -25,7 +38,7 @@ const StatusBadge = ({ status }: { status: Status }) => {
           "text-red-500": status === "cancelled",
         })}
       >
-        {status}
+        {portugueseStatus}
       </p>
     </div>
   );
